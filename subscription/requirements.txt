@@ -1,0 +1,5 @@
+pyTelegramBotAPI
+requests
+aiohttp
+schedule
+python-dotenv
