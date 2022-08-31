@@ -15,12 +15,15 @@ def removeExpiredUser():
     cur.execute(sql)
     res = cur.fetchall()
     if len(res) != 0:
+        kicked_user = []
         for i in res:
+            bot.kick_chat_member(os.getenv('chat_id'), i[0])
+            kicked_user.append(i[0])
             sql = "DELETE FROM user WHERE id = {}".format(i[0])
             cur = conn.cursor()
             cur.execute(sql)
             conn.commit()
-            bot.send_message(chat_id, "用户{}已删除".format(i[0]))
+    bot.send_message(chat_id, "用户{}已删除".format(kicked_user))
 
 #提醒续费
 def remindrenew():
@@ -40,8 +43,12 @@ def notice():
 
 bot.send_message(os.getenv('masterid'), "开始执行计划任务~")
 try:
-    remindrenew()
     removeExpiredUser()
+    remindrenew()
     notice()
-except:
+except Exception as e:
     bot.send_message(os.getenv('masterid'), "计划任务执行失败~")
+    bot.send_message(os.getenv('masterid'), e)
+    raise e
+finally:
+    conn.close()

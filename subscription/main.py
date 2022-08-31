@@ -37,15 +37,11 @@ async def send_welcome(message):
 # 处理新用户
 @bot.message_handler(content_types=['new_chat_members'], chat_id=chat_id)
 async def newMemmber(message):
-    id = message.json['new_chat_member']['id']
-    sql = "SELECT id FROM user WHERE id = {}".format(id)
+    #如果用户不存在则插入数据库
+    sql = "REPLACE INTO user VALUES({id},date(CURRENT_DATE, '+30 day'),'user',{username})".format(id=id, username = message.json['new_chat_member']['username'])
     cur = conn.cursor()
     cur.execute(sql)
-    if len(cur.fetchall()) == 0:
-        sql = "INSERT INTO user VALUES({id},date(CURRENT_DATE, '+30 day'),'user',{username})".format(id=id, username = message.json['new_chat_member']['username'])
-        cur = conn.cursor()
-        cur.execute(sql)
-        conn.commit()
+    conn.commit()
     await bot.send_message(chat_id, "欢迎新用户：{}".format(message.json['new_chat_member']['first_name']))
 
 # 续费
