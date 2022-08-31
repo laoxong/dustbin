@@ -10,7 +10,7 @@ conn = sqlite3.connect('user.db')
 #删除过期用户
 def removeExpiredUser():
     bot.send_message(os.getenv('masterid'), "开删除过期用户任务~")
-    sql = "SELECT id FROM user WHERE expiredtime = date(CURRENT_DATE) AND usertype is 'user'"
+    sql = "SELECT id FROM user WHERE expiredtime <= date(CURRENT_DATE) AND usertype is 'user'"
     cur = conn.cursor()
     cur.execute(sql)
     res = cur.fetchall()
@@ -28,7 +28,7 @@ def removeExpiredUser():
 #提醒续费
 def remindrenew():
     bot.send_message(os.getenv('masterid'), "开始提醒续费任务~")
-    sql = "SELECT id,username FROM user WHERE expiredtime < date(CURRENT_DATE,'+5 day') AND usertype is 'user'"
+    sql = "SELECT id,username FROM user WHERE expiredtime <= date(CURRENT_DATE,'+5 day') AND usertype is 'user'"
     cur = conn.cursor()
     cur.execute(sql)
     text = "以下用户还剩5天到期\n"
