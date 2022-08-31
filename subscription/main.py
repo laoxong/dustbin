@@ -35,10 +35,10 @@ async def send_welcome(message):
 
 
 # 处理新用户
-@bot.message_handler(content_types=['new_chat_members'], chat_id=chat_id)
+@bot.message_handler(content_types=['new_chat_members'])
 async def newMemmber(message):
     #如果用户不存在则插入数据库
-    sql = "REPLACE INTO user VALUES({id},date(CURRENT_DATE, '+30 day'),'user',{username})".format(id=id, username = message.json['new_chat_member']['username'])
+    sql = "REPLACE INTO user VALUES({id},date(CURRENT_DATE, '+30 day'),'user','{username}')".format(id=id, username = message.json['new_chat_member']['username'])
     cur = conn.cursor()
     cur.execute(sql)
     conn.commit()
@@ -65,7 +65,6 @@ async def renew(message):
 #我的信息
 @bot.message_handler(commands=['me'])
 async def getmyinfo(message):
-    breakpoint()
     sql = "SELECT expiredtime FROM user WHERE id = {}".format(message.from_user.id)
     cur = conn.cursor()
     cur.execute(sql)
@@ -73,11 +72,11 @@ async def getmyinfo(message):
     if len(res) != 0:
         await bot.reply_to(message, "你的信息为:\n用户名:@{}\n到期时间:{}".format(message.from_user.username, res[0][0]))
     else:
-        await bot.reply_to(message, "什么,数据库中没有你,竟然有漏网之鱼\n不管怎样,你现在入库了")
-        sql = "INSERT INTO user VALUES({id},date(CURRENT_DATE, '+30 day'),'user',{username})".format(id=message.from_user.id, username = message.from_user.username)
+        sql = "INSERT INTO user VALUES({id},date(CURRENT_DATE, '+30 day'),'user', '{username}')".format(id=message.from_user.id, username = message.from_user.username)
         cur = conn.cursor()
         cur.execute(sql)
         conn.commit()
+        await bot.reply_to(message, "什么,数据库中没有你,竟然有漏网之鱼\n不管怎样,你现在入库了")
 
 #更新用户过期时间到指定月份
 @bot.message_handler(commands=['update'])
