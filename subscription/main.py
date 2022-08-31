@@ -37,8 +37,7 @@ async def send_welcome(message):
 # 处理新用户
 @bot.message_handler(content_types=['new_chat_members'])
 async def newMemmber(message):
-    #如果用户不存在则插入数据库
-    sql = "REPLACE INTO user VALUES({id},date(CURRENT_DATE, '+30 day'),'user','{username}')".format(id=id, username = message.json['new_chat_member']['username'])
+    sql = "REPLACE INTO user VALUES({id},date(CURRENT_DATE, '+30 day'),'user','{username}')".format(id=message.json['new_chat_member']['id'], username = message.json['new_chat_member']['username'])
     cur = conn.cursor()
     cur.execute(sql)
     conn.commit()
